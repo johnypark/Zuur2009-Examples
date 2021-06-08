@@ -1,7 +1,9 @@
 ---
 title: "Dealing with Heterogeniety"
-output: html_document
-
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 This page is a reproducible work for Chapter 4.1 of Zuur et al. (2009). This particular example is useful to practice methods to address heterogeniety (heteroscedasticy) in linear regression models. 
@@ -26,8 +28,6 @@ Squid<-read.table("data/Squid.txt",header = TRUE)
 Squid<-Squid%>%
       mutate(fMONTH=factor(MONTH))
 
-vf4<- varPower(form =~DML| fMONTH)
-M.gls4<-gls(Testisweight ~ DML*fMONTH, data=Squid, weights=vf4)
 ```
 
 ```{r}
@@ -38,7 +38,17 @@ coplot(E0~DML|fMONTH,ylab="lm residuals", data=Squid)
 
 
 ```{r}
+M1<-gls(Testisweight ~ DML*fMONTH, data=Squid)
+E0_n<-resid(M1, type="normalized")
+coplot(E0_n~DML|fMONTH,ylab="normalized lm residuals", data=Squid)
+```
+
+
+```{r}
 ### Ordinary residuals
+
+vf4<- varPower(form =~DML| fMONTH)
+M.gls4<-gls(Testisweight ~ DML*fMONTH, data=Squid, weights=vf4)
 E1<-resid(M.gls4)
 coplot(E1~ DML | fMONTH, ylab ="Ordinary residuals for power of the covariate", data= Squid)
 ```
